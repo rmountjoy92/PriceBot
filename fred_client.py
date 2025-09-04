@@ -24,6 +24,7 @@ FRED_SERIES = {
     "movie tickets": {
         "seriesid": "CUSR0000SS62031",
         "title": "Movie, Theater & Concert Ticket",
+        "subtext": "Consumer Price Index for All Urban Consumers: Admission to Movies, Theaters, and Concerts",
     },
     "tuition childcare": {"seriesid": "CUSR0000SEEB", "title": "Tuition & Child Care"},
     "toys": {"seriesid": "CUSR0000SERE01", "title": "Toy"},
@@ -100,8 +101,9 @@ class FREDClient:
         # Format the output string
         return f"""{emoji} {FRED_SERIES[product_name]['title']} prices are {"increasing" if change_direction == "+" else "decreasing"}! {emoji}
 
-The current price of {product_name} is: ${latest_price:0.2f}
-The price of {product_name} 12 months ago was: ${price_one_year_ago:0.2f}
+The current {FRED_SERIES[product_name]['subtext']} is: ${latest_price:0.2f}
+
+12 months ago it was: ${price_one_year_ago:0.2f}
 
 That's a {percentage_change}% {'increase' if change_direction == '+' else 'decrease'}!
 

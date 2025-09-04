@@ -31,15 +31,15 @@ POST_SCHEDULE = {
     19: {"name": "soft drinks", "source": "bls"},
     20: {"name": "butter", "source": "bls"},
     21: {"name": "rent", "source": "fred"},
-    22: {"name": "condos", "source": "fred"},
+    22: {"name": "cheese", "source": "fred"},
     23: {"name": "homeowners insurance", "source": "fred"},
-    24: {"name": "mortgage interest", "source": "fred"},
+    24: {"name": "mortgage interest rate", "source": "fred"},
     25: {"name": "household furnishings", "source": "fred"},
     26: {"name": "new vehicles", "source": "fred"},
     27: {"name": "used cars", "source": "fred"},
     28: {"name": "medical care", "source": "fred"},
     29: {"name": "movie tickets", "source": "fred"},
-    30: {"name": "tuition childcare", "source": "fred"},
+    30: {"name": "tuition & childcare", "source": "fred"},
     31: {"name": "toys", "source": "fred"},
 }
 
