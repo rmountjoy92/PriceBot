@@ -10,7 +10,7 @@ FRED_SERIES = {
         "seriesid": "PCU9241269241262",
         "title": "Homeowners Insurance",
     },
-    "mortgage interest": {
+    "mortgage interest rate": {
         "seriesid": "MORTGAGE30US",
         "title": "Mortgage Interest Rate",
     },
@@ -26,7 +26,7 @@ FRED_SERIES = {
         "title": "Movie, Theater & Concert Ticket",
         "subtext": "Consumer Price Index for All Urban Consumers: Admission to Movies, Theaters, and Concerts",
     },
-    "tuition childcare": {"seriesid": "CUSR0000SEEB", "title": "Tuition & Child Care"},
+    "tuition & childcare": {"seriesid": "CUSR0000SEEB", "title": "Tuition & Child Care"},
     "toys": {"seriesid": "CUSR0000SERE01", "title": "Toy"},
 }
 
@@ -57,20 +57,20 @@ class FREDClient:
 
         return results
 
-    def get_fred_prices_post(self, product_name: str) -> str:
+    def get_fred_prices_post(self, post: dict) -> str:
         # Fetch data for the specified product
         data = self.make_request(
-            [FRED_SERIES[product_name]["seriesid"]],
+            [post['Series ID']],
             f"{datetime.now().year - 1}",
             f"{datetime.now().year}",
         )
 
         # Extract observations for the series
-        series_id = FRED_SERIES[product_name]["seriesid"]
+        series_id = post['Series ID']
         observations = data[series_id].get("observations", [])
 
         if not observations:
-            return f"Error: No data available for {FRED_SERIES[product_name]['title']}."
+            return f"Error: No data available for {post['Name']}."
 
         # Get the latest price (last observation)
         latest_observation = observations[-1]
@@ -90,7 +90,7 @@ class FREDClient:
         if price_one_year_ago is None and len(observations) >= 12:
             price_one_year_ago = float(observations[-13]["value"])
         elif price_one_year_ago is None:
-            return f"Error: Insufficient data for {FRED_SERIES[product_name]['title']} to calculate year-over-year change."
+            return f"Error: Insufficient data for {post['Name']} to calculate year-over-year change."
 
         # Calculate percentage change
         price_change = ((latest_price - price_one_year_ago) / price_one_year_ago) * 100
@@ -98,14 +98,26 @@ class FREDClient:
         percentage_change = abs(round(price_change, 2))
         emoji = "📈" if change_direction == "+" else "📉"
 
-        # Format the output string
-        return f"""{emoji} {FRED_SERIES[product_name]['title']} prices are {"increasing" if change_direction == "+" else "decreasing"}! {emoji}
-
-The current {FRED_SERIES[product_name]['subtext']} is: ${latest_price:0.2f}
-
+        price_string = ""
+        if post['Type'] == 'Price':
+            price_string = f"""The current price for {post['Name'].lower()} is: ${latest_price:0.2f}
+            
 12 months ago it was: ${price_one_year_ago:0.2f}
+"""
+        if post['Type'] == 'Percent':
+            price_string = f"""The current percent for {post['Name'].lower()} is: {latest_price:0.2f}%
+12 months ago it was: {price_one_year_ago:0.2f}%
+"""
+        if post['Type'] == 'Index':
+            price_string = f"""The current index for {post['Name'].lower()} is: ${latest_price:0.2f}
+12 months ago it was: ${price_one_year_ago:0.2f}
+"""
 
+        # Format the output string
+        return f"""{emoji} The price of {post['Name'].lower()} is {"increasing" if change_direction == "+" else "decreasing"}! {emoji}
+
+{price_string}
 That's a {percentage_change}% {'increase' if change_direction == '+' else 'decrease'}!
 
-* Source: Federal Reserve Bank of St. Louis
+* Source: {post['Series Name']} | Federal Reserve Bank of St. Louis
 """
