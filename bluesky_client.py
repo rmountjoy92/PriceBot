@@ -1,5 +1,6 @@
 import os
 import requests
+import cloudscraper
 from atproto import Client
 from atproto_client.models.app.bsky.embed.external import External, Main
 from bs4 import BeautifulSoup
@@ -23,8 +24,10 @@ class BlueskyClient:
         description = ""
         img_blob = None
 
-        resp = requests.get(article_url)
-        resp.raise_for_status()
+        scraper = cloudscraper.create_scraper()
+        resp = scraper.get(article_url)
+
+
         soup = BeautifulSoup(resp.text, "html.parser")
 
         title_tag = soup.find("meta", property="og:title")
