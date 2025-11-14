@@ -41,8 +41,7 @@ class BlueskyClient:
         image_tag = soup.find("meta", property="og:image")
         if image_tag:
             img_url = image_tag["content"]
-            with requests.get(img_url, stream=True, timeout=15) as resp:
-                resp.raise_for_status()
+            with scraper.get(img_url, stream=True, timeout=15) as resp:
                 blob = b''.join(chunk for chunk in resp.iter_content(chunk_size=8192))
             img_blob = self.client.upload_blob(blob)
             img_blob = img_blob.blob
